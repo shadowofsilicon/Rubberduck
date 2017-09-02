@@ -305,8 +305,6 @@ namespace Rubberduck.UI.Inspections
 
             UiDispatcher.Invoke(() =>
             {
-                //Results = new ObservableCollection<IInspectionResult>(results);
-
                 IsBusy = false;
                 IsRefreshing = false;
                 SelectedItem = null;
