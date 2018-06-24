@@ -232,23 +232,25 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Label Content="{Resx ResxName=Rubberduck.Resources.RubberduckUI, Key=GeneralSettings_ExperimentalFeatures}" FontWeight="SemiBold" />
-                    <Label Margin="5,0,0,5" FontWeight="Bold" Foreground="{x:Static SystemColors.HighlightTextBrush}">
-                        <Label.Content>
-                            <AccessText TextWrapping="Wrap" Text="{Resx ResxName=Rubberduck.Resources.RubberduckUI, Key=GeneralSettings_ExperimentalFeaturesWarning}"/>
-                        </Label.Content>
-                    </Label>
-                    <ListView ItemsSource="{Binding ExperimentalFeatures}"
-                          HorizontalAlignment="Stretch"
-                          BorderThickness="0">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <CheckBox IsChecked="{Binding IsEnabled}" Content="{Binding DisplayValue}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <Grid Visibility="Collapsed">
+                        <Label Content="{Resx ResxName=Rubberduck.Resources.RubberduckUI, Key=GeneralSettings_ExperimentalFeatures}" FontWeight="SemiBold" />
+                        <Label Margin="5,0,0,5" FontWeight="Bold" Foreground="{x:Static SystemColors.HighlightTextBrush}">
+                            <Label.Content>
+                                <AccessText TextWrapping="Wrap" Text="{Resx ResxName=Rubberduck.Resources.RubberduckUI, Key=GeneralSettings_ExperimentalFeaturesWarning}"/>
+                            </Label.Content>
+                        </Label>
+                        <ListView ItemsSource="{Binding ExperimentalFeatures}"
+                              HorizontalAlignment="Stretch"
+                              BorderThickness="0">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsEnabled}" Content="{Binding DisplayValue}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
