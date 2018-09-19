@@ -125,7 +125,7 @@ namespace Rubberduck.VBEditor
             return string.IsNullOrEmpty(_componentName) && string.IsNullOrEmpty(_projectName)
                 ? string.Empty
                 : (string.IsNullOrEmpty(ProjectPath) ? string.Empty : System.IO.Path.GetFileName(ProjectPath) + ";")
-                     + $"{_projectName}.{_componentName}";
+                     + $"{_projectName}" + (string.IsNullOrEmpty (_componentName) ? string.Empty : $".{_componentName}");
         }
 
         public override int GetHashCode()
