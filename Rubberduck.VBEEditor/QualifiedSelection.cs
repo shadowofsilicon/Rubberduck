@@ -18,7 +18,7 @@ namespace Rubberduck.VBEditor
         {
             return other.QualifiedName == QualifiedName
                 ? Selection.CompareTo(other.Selection)
-                : string.Compare(QualifiedName.ToString(), other.QualifiedName.ToString(), StringComparison.Ordinal);
+                : string.Compare(QualifiedName.ToString(), other.QualifiedName.ToString(), StringComparison.CurrentCultureIgnoreCase);
         }
 
         public bool Equals(QualifiedSelection other)
