@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using NLog;
 using Rubberduck.Common;
 using Rubberduck.Interaction.Navigation;
@@ -16,7 +18,6 @@ using Rubberduck.Parsing.UIContext;
 using Rubberduck.Parsing.VBA;
 using Rubberduck.Settings;
 using Rubberduck.UI.Command;
-using Rubberduck.UI.Controls;
 using Rubberduck.UI.Settings;
 
 namespace Rubberduck.UI.Inspections
@@ -101,6 +102,8 @@ namespace Rubberduck.UI.Inspections
             });
 
             _state.StateChanged += HandleStateChanged;
+
+            BindingOperations.CollectionRegistering += BindingOperations_CollectionRegistering;
         }
 
         /// <summary>
@@ -117,14 +120,44 @@ namespace Rubberduck.UI.Inspections
             _runInspectionsOnReparse = e.RunInspectionsOnReparse;
         }
 
-        private ObservableCollection<IInspectionResult> _results = new ObservableCollection<IInspectionResult>();
+        private readonly object _ResultsLock = new object();
+        void BindingOperations_CollectionRegistering(object sender, CollectionRegisteringEventArgs e)
+        {
+            if (e.Collection == Results)
+            {
+                BindingOperations.EnableCollectionSynchronization(Results, _ResultsLock);
+            }
+        }
+
+        private ObservableCollection<IInspectionResult> _results;
         public ObservableCollection<IInspectionResult> Results
         {
-            get => _results;
+            get
+            {
+                if (_results == null)
+                {
+                    _results = new ObservableCollection<IInspectionResult>();
+                }
+                return _results;
+            }
             private set
             {
                 _results = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private CollectionView _resultsView { get; set; }
+        public CollectionView ResultsView
+        {
+            get
+            {
+                if (_resultsView == null)
+                {
+                    _resultsView = (CollectionView)new CollectionViewSource { Source = Results }.View;
+                    _resultsView.SortDescriptions.Add(new SortDescription("QualifiedSelection", ListSortDirection.Ascending));
+                }
+                return _resultsView;
             }
         }
 
@@ -196,13 +229,8 @@ namespace Rubberduck.UI.Inspections
 
                 if (value)
                 {
-                    Results = new ObservableCollection<IInspectionResult>(
-                            Results.OrderBy(o => o.Inspection.InspectionType)
-                                .ThenBy(t => t.Inspection.Name)
-                                .ThenBy(t => t.QualifiedSelection.QualifiedName.Name)
-                                .ThenBy(t => t.QualifiedSelection.Selection.StartLine)
-                                .ThenBy(t => t.QualifiedSelection.Selection.StartColumn)
-                                .ToList());
+                    _resultsView.GroupDescriptions.Clear();
+                    _resultsView.GroupDescriptions.Add(new PropertyGroupDescription("Inspection.InspectionTypeName"));
                 }
 
                 _groupByInspectionType = value;
@@ -220,12 +248,8 @@ namespace Rubberduck.UI.Inspections
 
                 if (value)
                 {
-                    Results = new ObservableCollection<IInspectionResult>(
-                            Results.OrderBy(o => o.QualifiedSelection.QualifiedName.Name)
-                                .ThenBy(t => t.Inspection.Name)
-                                .ThenBy(t => t.QualifiedSelection.Selection.StartLine)
-                                .ThenBy(t => t.QualifiedSelection.Selection.StartColumn)
-                                .ToList());
+                    _resultsView.GroupDescriptions.Clear();
+                    _resultsView.GroupDescriptions.Add(new PropertyGroupDescription("QualifiedSelection.QualifiedName.Name"));
                 }
 
                 _groupByLocation = value;
@@ -314,32 +338,14 @@ namespace Rubberduck.UI.Inspections
             {
                 var inspectionResults = await _inspector.FindIssuesAsync(_state, token);
                 results = inspectionResults.ToList();
+                Results.Clear();
+                results.ToList().ForEach(Results.Add);
             }
             catch (OperationCanceledException)
             {
                 Logger.Debug("Inspections got canceled.");
                 return; //We throw away the partial results.
             }
-
-            if (GroupByInspectionType)
-            {
-                results = results.OrderBy(o => o.Inspection.InspectionType)
-                    .ThenBy(t => t.Inspection.Name)
-                    .ThenBy(t => t.QualifiedSelection.QualifiedName.Name)
-                    .ThenBy(t => t.QualifiedSelection.Selection.StartLine)
-                    .ThenBy(t => t.QualifiedSelection.Selection.StartColumn)
-                    .ToList();
-            }
-            else
-            {
-                results = results.OrderBy(o => o.QualifiedSelection.QualifiedName.Name)
-                    .ThenBy(t => t.Inspection.Name)
-                    .ThenBy(t => t.QualifiedSelection.Selection.StartLine)
-                    .ThenBy(t => t.QualifiedSelection.Selection.StartColumn)
-                    .ToList();
-            }
-
-            Results = new ObservableCollection<IInspectionResult>(results);
 
             _uiDispatcher.Invoke(() =>
             {
@@ -349,10 +355,19 @@ namespace Rubberduck.UI.Inspections
                     OnPropertyChanged("EmptyUIRefreshVisibility");
                     IsRefreshing = false;
                     SelectedItem = null;
+                    if (_resultsView.GroupDescriptions.Count == 0 && _groupByLocation)
+                    {
+                        _resultsView.GroupDescriptions.Add(new PropertyGroupDescription("QualifiedSelection.QualifiedName.Name"));
+                    }
+                    else if (_resultsView.GroupDescriptions.Count == 0 && _groupByInspectionType)
+                    {
+                        _resultsView.GroupDescriptions.Add(new PropertyGroupDescription("Inspection.InspectionTypeName"));
+                    }
+                    OnPropertyChanged("_resultsView");
                 }
                 catch (Exception exception)
                 {
-                    Logger.Error(exception, "Exception thrown trying to refresh the inspection results view on th UI thread.");
+                    Logger.Error(exception, "Exception thrown trying to refresh the inspection results view on the UI thread.");
                 }
             });
 

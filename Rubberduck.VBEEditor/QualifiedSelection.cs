@@ -2,7 +2,7 @@
 
 namespace Rubberduck.VBEditor
 {
-    public readonly struct QualifiedSelection : IComparable<QualifiedSelection>, IEquatable<QualifiedSelection>
+    public readonly struct QualifiedSelection : IComparable, IComparable<QualifiedSelection>, IEquatable<QualifiedSelection>
     {
         public QualifiedSelection(QualifiedModuleName qualifiedName, Selection selection)
         {
@@ -14,11 +14,23 @@ namespace Rubberduck.VBEditor
 
         public Selection Selection { get; }
 
+        public int CompareTo(object obj)
+        {
+            if (obj == null) return 1;
+
+            QualifiedSelection other = (QualifiedSelection)obj;
+
+            if (other != null)
+                return this.CompareTo(other);
+            else
+                throw new ArgumentException("Object is not a QualifiedSelection");
+        }
+
         public int CompareTo(QualifiedSelection other)
         {
             return other.QualifiedName == QualifiedName
                 ? Selection.CompareTo(other.Selection)
-                : string.Compare(QualifiedName.ToString(), other.QualifiedName.ToString(), StringComparison.Ordinal);
+                : string.Compare(QualifiedName.ToString(), other.QualifiedName.ToString(), StringComparison.CurrentCultureIgnoreCase);
         }
 
         public bool Equals(QualifiedSelection other)

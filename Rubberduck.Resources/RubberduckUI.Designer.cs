@@ -281,6 +281,15 @@ namespace Rubberduck.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Severity.
+        /// </summary>
+        public static string CodeInspectionResults_Severity {
+            get {
+                return ResourceManager.GetString("CodeInspectionResults_Severity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string CodeInspectionResults_Type {
