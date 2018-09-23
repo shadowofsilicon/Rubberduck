@@ -1305,6 +1305,7 @@ NOTE: Restart is required for the setting to take effect.</value>
   </data>
   <data name="CodeInspectionResults_Severity" xml:space="preserve">
     <value>Severity</value>
+  </data>
   <data name="EmptyLineHandling_Ignore" xml:space="preserve">
     <value>Ignore</value>
   </data>
