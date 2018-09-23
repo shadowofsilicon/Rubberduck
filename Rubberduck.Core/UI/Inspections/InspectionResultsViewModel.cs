@@ -352,7 +352,7 @@ namespace Rubberduck.UI.Inspections
                 }
                 catch (Exception exception)
                 {
-                    Logger.Error(exception, "Exception thrown trying to refresh the inspection results view on th UI thread.");
+                    Logger.Error(exception, "Exception thrown trying to refresh the inspection results view on the UI thread.");
                 }
             });
 
