@@ -1303,4 +1303,7 @@ NOTE: Restart is required for the setting to take effect.</value>
   <data name="Language_CS" xml:space="preserve">
     <value>Czech</value>
   </data>
+  <data name="CodeInspectionResults_Severity" xml:space="preserve">
+    <value>Severity</value>
+  </data>
 </root>
