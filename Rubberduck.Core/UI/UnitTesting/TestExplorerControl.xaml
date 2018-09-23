@@ -470,7 +470,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="10"/>
