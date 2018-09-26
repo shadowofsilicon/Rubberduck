@@ -76,8 +76,8 @@ artifacts:
     name: Rubberduck
 deploy:
   - provider: GitHub
-    tag: shadowofsilcon's Rubberduck v$(appveyor_build_version)
-    release: shadowofsilcon's Rubberduck v$(appveyor_build_version)
+    tag: shadowofsilcon-Rubberduck v$(appveyor_build_version)
+    release: shadowofsilcon-Rubberduck v$(appveyor_build_version)
     description: AppVeyor build on [master] - https://ci.appveyor.com/project/shadowofsilicon/rubberduck/build/$(appveyor_build_version)
     auth_token:
       secure: yTrSbv8/Dcie9qLdCE2r/nBTZBMwiHAsH1Gq6W8QD1wak1QUUF2yEMMOjyMpathe
@@ -87,8 +87,8 @@ deploy:
     on:
       branch: master
   - provider: GitHub
-    tag: shadowofsilcon's Rubberduck v$(appveyor_build_version)
-    release: shadowofsilcon's Rubberduck v$(appveyor_build_version)-pre
+    tag: shadowofsilcon-Rubberduck v$(appveyor_build_version)
+    release: shadowofsilcon-Rubberduck v$(appveyor_build_version)-pre
     description: AppVeyor build on [next] - https://ci.appveyor.com/project/shadowofsilicon/rubberduck/build/$(appveyor_build_version)
     auth_token:
       secure: yTrSbv8/Dcie9qLdCE2r/nBTZBMwiHAsH1Gq6W8QD1wak1QUUF2yEMMOjyMpathe
